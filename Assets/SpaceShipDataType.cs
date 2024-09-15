@@ -1,37 +1,30 @@
+using System;
+
 namespace BillUtils.SpaceShipData
 {
+    [Serializable]
     public enum E_SpaceShipPart
     {
+        NONE,
         HEAD,
         WING,
         WEAP,
         ENGINE
     }
-    public class SpaceShipHead
+    public class SpaceShipPartBase
     {
         public string Name;
         public E_SpaceShipPart Part;
         public string Path;
     }
+    [Serializable]
+    public class SpaceShipHead : SpaceShipPartBase { }
 
-    public class SpaceShipWing
-    {
-        public string Name;
-        public E_SpaceShipPart Part;
-        public string Path;
-    }
+    [Serializable]
+    public class SpaceShipWing : SpaceShipPartBase { }
+    [Serializable]
+    public class SpaceShipWeap : SpaceShipPartBase { }
 
-    public class SpaceShipWeap
-    {
-        public string Name;
-        public E_SpaceShipPart Part;
-        public string Path;
-    }
-
-    public class SpaceShipEngine
-    {
-        public string Name;
-        public E_SpaceShipPart Part;
-        public string Path;
-    }
+    [Serializable]
+    public class SpaceShipEngine : SpaceShipPartBase { }
 }

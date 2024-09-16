@@ -22,6 +22,27 @@ MonoBehaviour:
   - Name: Head.002
     Part: 1
     Path: HEAD/Head.002
+  - Name: Head.003
+    Part: 1
+    Path: HEAD/Head.003
+  - Name: Head.004
+    Part: 1
+    Path: HEAD/Head.004
+  - Name: Head.005
+    Part: 1
+    Path: HEAD/Head.005
+  - Name: Head.006
+    Part: 1
+    Path: HEAD/Head.006
+  - Name: Head.007
+    Part: 1
+    Path: HEAD/Head.007
+  - Name: Head.008
+    Part: 1
+    Path: HEAD/Head.008
+  - Name: Head.009
+    Part: 1
+    Path: HEAD/Head.009
   spaceShipWings:
   - Name: Wing.000
     Part: 2
@@ -32,6 +53,27 @@ MonoBehaviour:
   - Name: Wing.002
     Part: 2
     Path: WING/Wing.002
+  - Name: Wing.003
+    Part: 2
+    Path: WING/Wing.003
+  - Name: Wing.004
+    Part: 2
+    Path: WING/Wing.004
+  - Name: Wing.005
+    Part: 2
+    Path: WING/Wing.005
+  - Name: Wing.006
+    Part: 2
+    Path: WING/Wing.006
+  - Name: Wing.007
+    Part: 2
+    Path: WING/Wing.007
+  - Name: Wing.008
+    Part: 2
+    Path: WING/Wing.008
+  - Name: Wing.009
+    Part: 2
+    Path: WING/Wing.009
   spaceShipWeaps:
   - Name: Weap.000
     Part: 3
@@ -42,6 +84,27 @@ MonoBehaviour:
   - Name: Weap.002
     Part: 3
     Path: WEAP/Weap.002
+  - Name: Weap.003
+    Part: 3
+    Path: WEAP/Weap.003
+  - Name: Weap.004
+    Part: 3
+    Path: WEAP/Weap.004
+  - Name: Weap.005
+    Part: 3
+    Path: WEAP/Weap.005
+  - Name: Weap.006
+    Part: 3
+    Path: WEAP/Weap.006
+  - Name: Weap.007
+    Part: 3
+    Path: WEAP/Weap.007
+  - Name: Weap.008
+    Part: 3
+    Path: WEAP/Weap.008
+  - Name: Weap.009
+    Part: 3
+    Path: WEAP/Weap.009
   spaceShipEngines:
   - Name: Engine.000
     Part: 4
@@ -52,4 +115,25 @@ MonoBehaviour:
   - Name: Engine.002
     Part: 4
     Path: ENGINE/Engine.002
-  Limit: 2
+  - Name: Engine.003
+    Part: 4
+    Path: ENGINE/Engine.003
+  - Name: Engine.004
+    Part: 4
+    Path: ENGINE/Engine.004
+  - Name: Engine.005
+    Part: 4
+    Path: ENGINE/Engine.005
+  - Name: Engine.006
+    Part: 4
+    Path: ENGINE/Engine.006
+  - Name: Engine.007
+    Part: 4
+    Path: ENGINE/Engine.007
+  - Name: Engine.008
+    Part: 4
+    Path: ENGINE/Engine.008
+  - Name: Engine.009
+    Part: 4
+    Path: ENGINE/Engine.009
+  Limit: 9

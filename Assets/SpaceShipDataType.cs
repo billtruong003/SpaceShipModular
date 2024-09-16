@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace BillUtils.SpaceShipData
 {
@@ -16,6 +17,11 @@ namespace BillUtils.SpaceShipData
         public string Name;
         public E_SpaceShipPart Part;
         public string Path;
+
+        public Mesh GetMesh()
+        {
+            return Resources.Load<Mesh>(Path);
+        }
     }
     [Serializable]
     public class SpaceShipHead : SpaceShipPartBase { }

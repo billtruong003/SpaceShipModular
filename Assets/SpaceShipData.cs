@@ -33,6 +33,30 @@ public class SpaceShipData : ScriptableObject
         }
     }
 
+    public Mesh GetCorrectMesh(E_SpaceShipPart e_SpaceShipPart, int num)
+    {
+        if (num <= 0 || num > Limit)
+        {
+            Debug.LogWarning("Số lượng không hợp lệ.");
+            return null;
+        }
+
+        switch (e_SpaceShipPart)
+        {
+            case E_SpaceShipPart.HEAD:
+                return spaceShipHeads[num - 1].GetMesh();
+            case E_SpaceShipPart.WING:
+                return spaceShipWings[num - 1].GetMesh();
+            case E_SpaceShipPart.WEAP:
+                return spaceShipWeaps[num - 1].GetMesh();
+            case E_SpaceShipPart.ENGINE:
+                return spaceShipEngines[num - 1].GetMesh();
+            default:
+                Debug.LogWarning("Không tìm thấy phần bộ phận tàu vũ trụ.");
+                return null;
+        }
+    }
+
     private Mesh LoadMesh<T>(List<T> parts, string partType) where T : SpaceShipPartBase
     {
         if (parts == null || parts.Count == 0)

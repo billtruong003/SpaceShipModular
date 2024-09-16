@@ -17,6 +17,8 @@ public class SpaceShipCreator : MonoBehaviour
     [SerializeField] private SpaceShipPart Weap;
     [Foldout("Space Ship Part")]
     [SerializeField] private SpaceShipPart Engine;
+    [SerializeField] private int PickModelMark;
+    [SerializeField] private bool PickCorrectModelMark;
 
     [Button]
     public void InitSpaceShip()
@@ -30,16 +32,27 @@ public class SpaceShipCreator : MonoBehaviour
     [Button]
     public void GenerateSpaceShip()
     {
-        Head.meshFilter.mesh = spaceShipData.GetPartMesh(E_SpaceShipPart.HEAD);
-        Wing.meshFilter.mesh = spaceShipData.GetPartMesh(E_SpaceShipPart.WING);
-        Weap.meshFilter.mesh = spaceShipData.GetPartMesh(E_SpaceShipPart.WEAP);
-        Engine.meshFilter.mesh = spaceShipData.GetPartMesh(E_SpaceShipPart.ENGINE);
+        if (!PickCorrectModelMark)
+        {
+            Head.SetUpMesh(spaceShipData.GetPartMesh(E_SpaceShipPart.HEAD));
+            Wing.SetUpMesh(spaceShipData.GetPartMesh(E_SpaceShipPart.WING));
+            Weap.SetUpMesh(spaceShipData.GetPartMesh(E_SpaceShipPart.WEAP));
+            Engine.SetUpMesh(spaceShipData.GetPartMesh(E_SpaceShipPart.ENGINE));
+        }
+        else
+        {
+            Head.SetUpMesh(spaceShipData.GetCorrectMesh(E_SpaceShipPart.HEAD, PickModelMark));
+            Wing.SetUpMesh(spaceShipData.GetCorrectMesh(E_SpaceShipPart.WING, PickModelMark));
+            Weap.SetUpMesh(spaceShipData.GetCorrectMesh(E_SpaceShipPart.WEAP, PickModelMark));
+            Engine.SetUpMesh(spaceShipData.GetCorrectMesh(E_SpaceShipPart.ENGINE, PickModelMark));
+        }
     }
 }
 
 [Serializable]
 public class SpaceShipPart
 {
+    public string MeshName;
     [ShowAssetPreview]
     public GameObject partObject;
     public MeshFilter meshFilter;
@@ -50,5 +63,11 @@ public class SpaceShipPart
     {
         mesh = partObject.GetComponent<MeshRenderer>();
         meshFilter = partObject.GetComponent<MeshFilter>();
+    }
+
+    public void SetUpMesh(Mesh mesh)
+    {
+        MeshName = mesh.name;
+        meshFilter.mesh = mesh;
     }
 }

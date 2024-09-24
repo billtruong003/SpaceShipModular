@@ -3,15 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - RGBA
+  - ColorSlider
+  - Selectable
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - CaptureLayer
   - Water
   - UI
-  - 
+  - OutlineObject
   - 
   - 
   - 

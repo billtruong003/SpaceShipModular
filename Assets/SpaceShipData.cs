@@ -96,7 +96,8 @@ public class SpaceShipData : ScriptableObject
             {
                 Name = $"Head.{indexStr}",
                 Part = E_SpaceShipPart.HEAD,
-                Path = $"HEAD/Head.{indexStr}"
+                Path = $"HEAD/Head.{indexStr}",
+                IconPath = $"IconPNG/Head_{i}"
             };
             spaceShipHeads.Add(head);
 
@@ -105,7 +106,8 @@ public class SpaceShipData : ScriptableObject
             {
                 Name = $"Wing.{indexStr}",
                 Part = E_SpaceShipPart.WING,
-                Path = $"WING/Wing.{indexStr}"
+                Path = $"WING/Wing.{indexStr}",
+                IconPath = $"IconPNG/Wing_{i}"
             };
             spaceShipWings.Add(wing);
 
@@ -114,7 +116,8 @@ public class SpaceShipData : ScriptableObject
             {
                 Name = $"Weap.{indexStr}",
                 Part = E_SpaceShipPart.WEAP,
-                Path = $"WEAP/Weap.{indexStr}"
+                Path = $"WEAP/Weap.{indexStr}",
+                IconPath = $"IconPNG/Weap_{i}"
             };
             spaceShipWeaps.Add(weap);
 
@@ -123,7 +126,8 @@ public class SpaceShipData : ScriptableObject
             {
                 Name = $"Engine.{indexStr}",
                 Part = E_SpaceShipPart.ENGINE,
-                Path = $"ENGINE/Engine.{indexStr}"
+                Path = $"ENGINE/Engine.{indexStr}",
+                IconPath = $"IconPNG/Engine_{i}"
             };
             spaceShipEngines.Add(engine);
         }

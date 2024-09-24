@@ -47,7 +47,40 @@ public class SpaceShipCreator : MonoBehaviour
             Engine.SetUpMesh(spaceShipData.GetCorrectMesh(E_SpaceShipPart.ENGINE, PickModelMark));
         }
     }
+    [Button]
+    public void ResetCollider()
+    {
+        Head.ResetCollider();
+        Wing.ResetCollider();
+        Weap.ResetCollider();
+        Engine.ResetCollider();
+    }
+
+    public void SetModular(Mesh mesh, E_SpaceShipPart e_SpaceShipPart)
+    {
+        switch (e_SpaceShipPart)
+        {
+            case E_SpaceShipPart.HEAD:
+                Head.SetUpMesh(mesh);
+                break;
+            case E_SpaceShipPart.WING:
+                Wing.SetUpMesh(mesh);
+                break;
+            case E_SpaceShipPart.WEAP:
+                Weap.SetUpMesh(mesh);
+                break;
+            case E_SpaceShipPart.ENGINE:
+                Engine.SetUpMesh(mesh);
+                break;
+            default:
+                Debug.LogWarning(e_SpaceShipPart);
+                Debug.LogWarning("Không tìm thấy phần bộ phận tàu vũ trụ.");
+                break;
+        }
+    }
 }
+
+
 
 [Serializable]
 public class SpaceShipPart
@@ -58,16 +91,38 @@ public class SpaceShipPart
     public MeshFilter meshFilter;
     public MeshRenderer mesh;
     public Material material;
-
+    private MeshCollider meshCollider;
     public void Init()
     {
         mesh = partObject.GetComponent<MeshRenderer>();
+        MeshName = mesh.name;
+        material = mesh.material;
         meshFilter = partObject.GetComponent<MeshFilter>();
+    }
+
+    public void SetLayer()
+    {
+        partObject.layer = LayerMask.NameToLayer("CaptureLayer");
+    }
+
+    public void ResetLayer()
+    {
+        partObject.layer = LayerMask.NameToLayer("Default");
     }
 
     public void SetUpMesh(Mesh mesh)
     {
         MeshName = mesh.name;
         meshFilter.mesh = mesh;
+        ResetCollider();
+    }
+    public void ResetCollider()
+    {
+        meshCollider = partObject.GetComponent<MeshCollider>();
+        if (meshCollider != null && meshFilter != null)
+        {
+            meshCollider.sharedMesh = null;
+            meshCollider.sharedMesh = meshFilter.sharedMesh;
+        }
     }
 }

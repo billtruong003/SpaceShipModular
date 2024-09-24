@@ -16,124 +16,164 @@ MonoBehaviour:
   - Name: Head.000
     Part: 1
     Path: HEAD/Head.000
+    IconPath: IconPNG/Head_0
   - Name: Head.001
     Part: 1
     Path: HEAD/Head.001
+    IconPath: IconPNG/Head_1
   - Name: Head.002
     Part: 1
     Path: HEAD/Head.002
+    IconPath: IconPNG/Head_2
   - Name: Head.003
     Part: 1
     Path: HEAD/Head.003
+    IconPath: IconPNG/Head_3
   - Name: Head.004
     Part: 1
     Path: HEAD/Head.004
+    IconPath: IconPNG/Head_4
   - Name: Head.005
     Part: 1
     Path: HEAD/Head.005
+    IconPath: IconPNG/Head_5
   - Name: Head.006
     Part: 1
     Path: HEAD/Head.006
+    IconPath: IconPNG/Head_6
   - Name: Head.007
     Part: 1
     Path: HEAD/Head.007
+    IconPath: IconPNG/Head_7
   - Name: Head.008
     Part: 1
     Path: HEAD/Head.008
+    IconPath: IconPNG/Head_8
   - Name: Head.009
     Part: 1
     Path: HEAD/Head.009
+    IconPath: IconPNG/Head_9
   spaceShipWings:
   - Name: Wing.000
     Part: 2
     Path: WING/Wing.000
+    IconPath: IconPNG/Wing_0
   - Name: Wing.001
     Part: 2
     Path: WING/Wing.001
+    IconPath: IconPNG/Wing_1
   - Name: Wing.002
     Part: 2
     Path: WING/Wing.002
+    IconPath: IconPNG/Wing_2
   - Name: Wing.003
     Part: 2
     Path: WING/Wing.003
+    IconPath: IconPNG/Wing_3
   - Name: Wing.004
     Part: 2
     Path: WING/Wing.004
+    IconPath: IconPNG/Wing_4
   - Name: Wing.005
     Part: 2
     Path: WING/Wing.005
+    IconPath: IconPNG/Wing_5
   - Name: Wing.006
     Part: 2
     Path: WING/Wing.006
+    IconPath: IconPNG/Wing_6
   - Name: Wing.007
     Part: 2
     Path: WING/Wing.007
+    IconPath: IconPNG/Wing_7
   - Name: Wing.008
     Part: 2
     Path: WING/Wing.008
+    IconPath: IconPNG/Wing_8
   - Name: Wing.009
     Part: 2
     Path: WING/Wing.009
+    IconPath: IconPNG/Wing_9
   spaceShipWeaps:
   - Name: Weap.000
     Part: 3
     Path: WEAP/Weap.000
+    IconPath: IconPNG/Weap_0
   - Name: Weap.001
     Part: 3
     Path: WEAP/Weap.001
+    IconPath: IconPNG/Weap_1
   - Name: Weap.002
     Part: 3
     Path: WEAP/Weap.002
+    IconPath: IconPNG/Weap_2
   - Name: Weap.003
     Part: 3
     Path: WEAP/Weap.003
+    IconPath: IconPNG/Weap_3
   - Name: Weap.004
     Part: 3
     Path: WEAP/Weap.004
+    IconPath: IconPNG/Weap_4
   - Name: Weap.005
     Part: 3
     Path: WEAP/Weap.005
+    IconPath: IconPNG/Weap_5
   - Name: Weap.006
     Part: 3
     Path: WEAP/Weap.006
+    IconPath: IconPNG/Weap_6
   - Name: Weap.007
     Part: 3
     Path: WEAP/Weap.007
+    IconPath: IconPNG/Weap_7
   - Name: Weap.008
     Part: 3
     Path: WEAP/Weap.008
+    IconPath: IconPNG/Weap_8
   - Name: Weap.009
     Part: 3
     Path: WEAP/Weap.009
+    IconPath: IconPNG/Weap_9
   spaceShipEngines:
   - Name: Engine.000
     Part: 4
     Path: ENGINE/Engine.000
+    IconPath: IconPNG/Engine_0
   - Name: Engine.001
     Part: 4
     Path: ENGINE/Engine.001
+    IconPath: IconPNG/Engine_1
   - Name: Engine.002
     Part: 4
     Path: ENGINE/Engine.002
+    IconPath: IconPNG/Engine_2
   - Name: Engine.003
     Part: 4
     Path: ENGINE/Engine.003
+    IconPath: IconPNG/Engine_3
   - Name: Engine.004
     Part: 4
     Path: ENGINE/Engine.004
+    IconPath: IconPNG/Engine_4
   - Name: Engine.005
     Part: 4
     Path: ENGINE/Engine.005
+    IconPath: IconPNG/Engine_5
   - Name: Engine.006
     Part: 4
     Path: ENGINE/Engine.006
+    IconPath: IconPNG/Engine_6
   - Name: Engine.007
     Part: 4
     Path: ENGINE/Engine.007
+    IconPath: IconPNG/Engine_7
   - Name: Engine.008
     Part: 4
     Path: ENGINE/Engine.008
+    IconPath: IconPNG/Engine_8
   - Name: Engine.009
     Part: 4
     Path: ENGINE/Engine.009
+    IconPath: IconPNG/Engine_9
   Limit: 9

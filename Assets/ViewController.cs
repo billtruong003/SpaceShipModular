@@ -47,10 +47,10 @@ public class CameraController : MonoBehaviour
             transform.LookAt(target.position);
         }
 
-        // if (Input.GetMouseButtonDown(0))
-        // {
-        //     ChangeTarget();
-        // }
+        if (Input.GetMouseButtonDown(0))
+        {
+            ChangeTarget();
+        }
     }
 
     private Transform transformSpaceshipPart;

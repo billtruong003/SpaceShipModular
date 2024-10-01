@@ -67,7 +67,7 @@ public class OutlineMeshesInLayerFeature : ScriptableRendererFeature
         FilteringSettings _filteringSettings;
         RenderStateBlock _renderStateBlock;
         int stencilBuffer;
-  
+
         //I hate these constructors but they work. Feel free to make something less verbose
         public FillStencilForOutlinePass(int stencilBuffer, string profilerTag, LayerMask layerMask, Material material, RenderPassEvent renderPassEvent)
         {
@@ -101,7 +101,7 @@ public class OutlineMeshesInLayerFeature : ScriptableRendererFeature
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
         {
             RenderTextureDescriptor stencilRTD = renderingData.cameraData.cameraTargetDescriptor;
-            
+
             //make sure your machine supports the texture format, it will fail if it doesn't
             //I used this because by machine supports this format
             stencilRTD.colorFormat = RenderTextureFormat.ARGB32;
@@ -181,7 +181,7 @@ public class OutlineMeshesInLayerFeature : ScriptableRendererFeature
 
         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
         {
-        // a lot of this is from https://gist.github.com/bgolus/a18c1a3fc9af2d73cc19169a809eb195
+            // a lot of this is from https://gist.github.com/bgolus/a18c1a3fc9af2d73cc19169a809eb195
             int width = renderingData.cameraData.cameraTargetDescriptor.width;
             int height = renderingData.cameraData.cameraTargetDescriptor.height;
 
@@ -329,7 +329,7 @@ public class OutlineMeshesInLayerFeature : ScriptableRendererFeature
                 {
                     //jfa init
                     cb.Blit(silhouetteBufferID, nearestPointID, material, SHADER_PASS_JFA_INIT);
-                    
+
                     //jfa flood passes
                     for (int i = jfaIter; i >= 0; i--)
                     {
@@ -400,7 +400,7 @@ public class OutlineMeshesInLayerFeature : ScriptableRendererFeature
 
     public override void Create()
     {
-        if(settings.outlineMaterial == null || !settings.isEnabled)
+        if (settings.outlineMaterial == null || !settings.isEnabled)
         {
             return;
         }
@@ -417,7 +417,7 @@ public class OutlineMeshesInLayerFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        if(settings.outlineMaterial == null || !settings.isEnabled)
+        if (settings.outlineMaterial == null || !settings.isEnabled)
         {
             return;
         }

@@ -73,8 +73,8 @@ MonoBehaviour:
   settings:
     isEnabled: 1
     outlineMaterial: {fileID: 2100000, guid: a19fda418df594f49a0276ae8ae518e2, type: 2}
-    outlineColor: {r: 0.012286487, g: 0.79129815, b: 0.78353804, a: 1}
-    outlinePixelWidth: 6
+    outlineColor: {r: 0.028226938, g: 1.8179259, b: 1.8000978, a: 1}
+    outlinePixelWidth: 5
     renderPassEvent: 300
     layerToRender:
       serializedVersion: 2
@@ -98,11 +98,11 @@ MonoBehaviour:
     cavityType: 0
     renderPassEvent: 250
     debug: 0
-    curvatureScale: 2
+    curvatureScale: 1
     curvatureRidge: 2
-    curvatureValley: 2
+    curvatureValley: 1.6
     cavityDistance: 1
-    cavityAttenuation: 0.7
-    cavityRidge: 1.5
-    cavityValley: 2
+    cavityAttenuation: 0.714
+    cavityRidge: 1.27
+    cavityValley: 1.89
     cavitySamples: 12

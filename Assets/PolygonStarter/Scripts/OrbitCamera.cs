@@ -8,15 +8,15 @@ public class OrbitCamera : MonoBehaviour
     public Transform target = default;
 
     private Transform _self = default;
-    
+
     private void LateUpdate()
     {
         if (!_self)
             _self = transform;
-        
+
         if (target)
         {
-            _self.RotateAround(target.position, Vector3.up, speed * Time.deltaTime);   
+            _self.RotateAround(target.position, Vector3.up, speed * Time.deltaTime);
         }
     }
 
@@ -25,7 +25,7 @@ public class OrbitCamera : MonoBehaviour
         if (target)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(target.transform.position, 1.0f);   
+            Gizmos.DrawSphere(target.transform.position, 1.0f);
         }
     }
 }

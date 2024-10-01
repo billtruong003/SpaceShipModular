@@ -6,16 +6,32 @@ using System.Collections.Generic;
 using BillUtils.SpaceShipData;
 using NaughtyAttributes;
 using UnityEngine.UI;
-using Unity.VisualScripting;
+using TMPro;
+
 public class ChangeTextureColor : MonoBehaviour
 {
     [SerializeField] private Material material;
     [SerializeField] private Texture2D texture;
     [SerializeField] private Vector2Int currentPixel;
     [SerializeField] private Transform baseObject;
+    [SerializeField] private TMP_Dropdown partDropdown;
     [SerializeField] private List<ButtonChangeColor> buttonChangeColors;
     [SerializeField] private ButtonChangeColor currentButton;
 
+    [Foldout("Space Ship Part Toggles")]
+    [SerializeField] private Toggle toggleHead;
+
+    [Foldout("Space Ship Part Toggles")]
+    [SerializeField] private Toggle toggleWing;
+
+    [Foldout("Space Ship Part Toggles")]
+    [SerializeField] private Toggle toggleWeap;
+
+    [Foldout("Space Ship Part Toggles")]
+    [SerializeField] private Toggle toggleEngine;
+
+    public Vector2Int GetCurrentPixel => currentPixel;
+    public Action OnSetPixelPick;
     private Color currentColorPick;
 #if UnityEditor
     private Color[] colors = new Color[4];
@@ -43,7 +59,7 @@ public class ChangeTextureColor : MonoBehaviour
             material = gameObject.GetComponent<MeshRenderer>().material;
 
         // Sử dụng đúng tên thuộc tính của Texture trong shader, ví dụ: "_BaseMap"
-        string texturePropertyName = "Texture2D_DB342F0C"; // Thay bằng tên thuộc tính trong shader của bạn
+        string texturePropertyName = "_BaseMap"; // Thay bằng tên thuộc tính trong shader của bạn
 
         // Kiểm tra xem Material có thuộc tính này không
         if (material.HasProperty(texturePropertyName))
@@ -212,6 +228,7 @@ public class ChangeTextureColor : MonoBehaviour
             ColorPicker.Done();
         }
         currentPixel = pixelPick;
+        OnSetPixelPick?.Invoke();
         currentColorPick = TextureColorUtils.GetPixelColor(texture, pixelPick);
 
         ColorPicker.Create(currentColorPick, "Color Part Picking UV Position" + currentPixel.ToString(), (c) => OnColorChange(c, currentPixel), (c) => OnColorSelecte(c, currentPixel), false);
@@ -258,6 +275,128 @@ public class ChangeTextureColor : MonoBehaviour
             Debug.LogError("An error occurred while saving the texture: " + e.Message);
         }
     }
+
+    public void RandomizeColors()
+    {
+        foreach (ButtonChangeColor buttonChangeColor in buttonChangeColors)
+        {
+            bool isLocked = IsPartLocked(buttonChangeColor.SpaceShipPart);
+            if (isLocked)
+            {
+                Debug.Log($"{buttonChangeColor.SpaceShipPart} is locked, skipping color change.");
+                continue;
+            }
+            Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+            buttonChangeColor.SetColor(randomColor);
+            TextureColorUtils.SetPixelColor(texture, buttonChangeColor.PixelPick.x, buttonChangeColor.PixelPick.y, randomColor);
+        }
+        texture.Apply();
+    }
+
+    private bool IsPartLocked(E_SpaceShipPart part)
+    {
+        switch (part)
+        {
+            case E_SpaceShipPart.HEAD:
+                return toggleHead.isOn; // Nếu toggleHead bật thì part HEAD bị khóa
+            case E_SpaceShipPart.WING:
+                return toggleWing.isOn; // Tương tự với Wing
+            case E_SpaceShipPart.WEAP:
+                return toggleWeap.isOn; // Tương tự với Weap
+            case E_SpaceShipPart.ENGINE:
+                return toggleEngine.isOn; // Tương tự với Engine
+            default:
+                return false; // Nếu không phải các part trên thì không bị khóa
+        }
+    }
+
+
+    public void ApplyColorFromSelectedPart()
+    {
+        E_SpaceShipPart selectedPart = (E_SpaceShipPart)partDropdown.value;
+        ButtonChangeColor selectedButton = buttonChangeColors.Find(b => b.SpaceShipPart == selectedPart);
+
+        if (selectedButton == null)
+        {
+            Debug.LogError("Không tìm thấy bộ phận được chọn.");
+            return;
+        }
+
+        // Lấy màu hiện tại của các pixel của bộ phận được chọn theo trục X
+        List<Color> selectedColors = new List<Color>();
+        for (int x = 0; x < 4; x++)
+        {
+            Vector2Int pixelPick = new Vector2Int(x, selectedButton.PixelPick.y);
+            selectedColors.Add(TextureColorUtils.GetPixelColor(texture, pixelPick));
+        }
+
+        foreach (ButtonChangeColor button in buttonChangeColors)
+        {
+            // Bỏ qua bộ phận đã chọn, chỉ thay đổi màu cho các phần khác
+            if (button.SpaceShipPart != selectedPart)
+            {
+
+                Color colorToApply = selectedColors[button.PixelPick.x];
+                button.SetColor(colorToApply);
+                TextureColorUtils.SetPixelColor(texture, button.PixelPick.x, button.PixelPick.y, colorToApply);
+            }
+        }
+        texture.Apply();
+    }
+
+    Color[] colors;
+    int width;
+    int height;
+    int colorIndex;
+    public void ResetTextureColors()
+    {
+        colors = new Color[]
+        {
+        HexToColor("#bba45a"),
+        HexToColor("#672121"),
+        HexToColor("#000000"),
+        HexToColor("#ffffff")
+        };
+
+        width = texture.width;
+        height = texture.height;
+        colorIndex = 0;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                Color colorToApply = colors[colorIndex % colors.Length];
+                TextureColorUtils.SetPixelColor(texture, x, y, colorToApply);
+                ButtonChangeColor buttonChangeColor = buttonChangeColors.Find(b => b.PixelPick == new Vector2Int(x, y));
+                if (buttonChangeColor != null)
+                {
+                    buttonChangeColor.SetColor(colorToApply);
+                }
+
+                colorIndex++;
+            }
+        }
+
+        texture.Apply();
+    }
+
+    private Color HexToColor(string hex)
+    {
+        Color color;
+        if (ColorUtility.TryParseHtmlString(hex, out color))
+        {
+            return color;
+        }
+        else
+        {
+            Debug.LogError($"Mã màu không hợp lệ: {hex}");
+            return Color.white;
+        }
+    }
+
+
+
 #if UnityEditor
     void OnValidate()
     {

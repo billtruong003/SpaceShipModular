@@ -15,6 +15,19 @@ namespace BillUtils.SpaceShipData
         WEAP,
         ENGINE
     }
+
+    [Serializable]
+    public class MaterialPart
+    {
+        public E_SpaceShipPart Part;
+        public MeshRenderer MeshRenderer;
+        public Material Material;
+
+        public void Init()
+        {
+            Material = MeshRenderer.material;
+        }
+    }
     [Serializable]
     public class ButtonChangeColor
     {

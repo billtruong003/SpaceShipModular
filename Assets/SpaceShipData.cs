@@ -3,6 +3,7 @@ using UnityEngine;
 using BillUtils.SpaceShipData;
 using NaughtyAttributes;
 using System.Linq.Expressions;
+using System.Linq;
 
 [CreateAssetMenu(fileName = "SpaceShipData", menuName = "SpaceShipData", order = 0)]
 public class SpaceShipData : ScriptableObject
@@ -32,10 +33,39 @@ public class SpaceShipData : ScriptableObject
                 return null;
         }
     }
+    public Sprite GetIconFromMesh(string meshName, E_SpaceShipPart e_SpaceShipPart)
+    {
+        switch (e_SpaceShipPart)
+        {
+            case E_SpaceShipPart.HEAD:
+                return GetIcon(meshName, spaceShipHeads.Cast<SpaceShipPartBase>().ToList());
+            case E_SpaceShipPart.WING:
+                return GetIcon(meshName, spaceShipWings.Cast<SpaceShipPartBase>().ToList());
+            case E_SpaceShipPart.WEAP:
+                return GetIcon(meshName, spaceShipWeaps.Cast<SpaceShipPartBase>().ToList());
+            case E_SpaceShipPart.ENGINE:
+                return GetIcon(meshName, spaceShipEngines.Cast<SpaceShipPartBase>().ToList());
+            default:
+                Debug.LogWarning("Không tìm thấy phần bộ phận tàu vũ trụ.");
+                return null;
+        }
+    }
 
+
+    public Sprite GetIcon(string meshName, List<SpaceShipPartBase> spaceShipPart)
+    {
+        foreach (var item in spaceShipPart)
+        {
+            if (item.Name == meshName)
+            {
+                return item.GetSprite();
+            }
+        }
+        return spaceShipPart[0].GetSprite();
+    }
     public Mesh GetCorrectMesh(E_SpaceShipPart e_SpaceShipPart, int num)
     {
-        if (num <= 0 || num > Limit)
+        if (num <= 0 || num > Limit + 2)
         {
             Debug.LogWarning("Số lượng không hợp lệ.");
             return null;

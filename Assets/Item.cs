@@ -20,6 +20,11 @@ public class Item : MonoBehaviour
     {
         switch (e_SpaceShipPart)
         {
+            case E_SpaceShipPart.NONE:
+                this.e_SpaceShipPart = E_SpaceShipPart.HEAD;
+                SetSpaceShipPart(shipData.spaceShipHeads[index]);
+                image.sprite = spaceShipPartBase.GetSprite();
+                break;
             case E_SpaceShipPart.HEAD:
                 this.e_SpaceShipPart = E_SpaceShipPart.HEAD;
                 SetSpaceShipPart(shipData.spaceShipHeads[index]);

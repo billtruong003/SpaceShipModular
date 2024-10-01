@@ -14,6 +14,7 @@ public class CameraController : MonoBehaviour
     public float minDistance = 5.0f; // Khoảng cách tối thiểu
     public float maxDistance = 15.0f; // Khoảng cách tối đa
 
+    [SerializeField] private bool enable;
     [SerializeField] private Transform target;
     [SerializeField, ReadOnly] private float currentDistance;
 
@@ -24,11 +25,14 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        if (IsPointerOverUIObject())
+            return;
+
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         currentDistance -= scroll * zoomSpeed;
         currentDistance = Mathf.Clamp(currentDistance, minDistance, maxDistance); // Giới hạn khoảng cách
 
-        if (Input.GetMouseButton(2))
+        if (Input.GetMouseButton(1))
         {
             float horizontal = Input.GetAxis("Mouse X") * rotationSpeed;
             float vertical = Input.GetAxis("Mouse Y") * rotationSpeed;
@@ -47,7 +51,7 @@ public class CameraController : MonoBehaviour
             transform.LookAt(target.position);
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && enable)
         {
             ChangeTarget();
         }

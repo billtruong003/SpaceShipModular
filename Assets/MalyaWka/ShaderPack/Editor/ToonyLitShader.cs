@@ -37,7 +37,7 @@ namespace MalyaWka.ShaderPack.Editor
             On = 1,
             Off = 2
         }
-        
+
         protected class Styles
         {
             // Catergories
@@ -68,21 +68,24 @@ namespace MalyaWka.ShaderPack.Editor
             public static readonly GUIContent baseMap = new GUIContent("Base Map",
                 "Specifies the base Material and/or Color of the surface. If you’ve selected Transparent or Alpha Clipping under Surface Options, your Material uses the Texture’s alpha channel or color.");
 
+            public static readonly GUIContent metalicMap = new GUIContent("Metalic Map",
+                "Specifies the base Material and/or Color of the surface. If you’ve selected Transparent or Alpha Clipping under Surface Options, your Material uses the Texture’s alpha channel or color.");
+
             public static readonly GUIContent queueSlider = new GUIContent("Render Order Priority",
                 "Determines the chronological rendering order for a Material. High values are rendered first.");
-            
+
             public static readonly GUIContent cavityEnabled = new GUIContent("Enable Cavity",
                 "Select cavity enabled or not for this material.");
-            
+
             public static readonly GUIContent zWriteMode = new GUIContent("Z Write Mode",
                 "Select this if want rewrite default mode for z write.");
-            
+
             public static readonly GUIContent topEnabled = new GUIContent("Always On Top",
                 "Select always on top enabled or not for this material.");
         }
 
         #endregion
-        
+
         #region Variables
 
         protected MaterialEditor materialEditor { get; set; }
@@ -99,18 +102,28 @@ namespace MalyaWka.ShaderPack.Editor
 
         protected MaterialProperty baseMapProp { get; set; }
 
+        protected MaterialProperty metalicMapProp { get; set; }
+
+        protected MaterialProperty metallicProp { get; set; }
+
+        protected MaterialProperty roughnessMapProp { get; set; }
+
+        protected MaterialProperty roughnessProp { get; set; }
+        protected MaterialProperty reflectionMapProp { get; set; }
+        protected MaterialProperty reflectionStrengthProp { get; set; }
+
         protected MaterialProperty baseColorProp { get; set; }
 
         protected MaterialProperty highlightColorProp { get; set; }
 
         protected MaterialProperty shadowColorProp { get; set; }
-        
+
         protected MaterialProperty queueOffsetProp { get; set; }
-        
+
         protected MaterialProperty cavityProp { get; set; }
-        
+
         protected MaterialProperty zWriteModeProp { get; set; }
-        
+
         protected MaterialProperty topProp { get; set; }
 
         public bool m_FirstTimeApply = true;
@@ -128,7 +141,7 @@ namespace MalyaWka.ShaderPack.Editor
         SavedBool m_AdvancedFoldout;
 
         #endregion
-        
+
         private const int queueOffsetRange = 50;
 
         #region GeneralFunctions
@@ -140,7 +153,9 @@ namespace MalyaWka.ShaderPack.Editor
 
             SetMaterialKeywords(material);
         }
-        
+
+
+
         public virtual void FindProperties(MaterialProperty[] properties)
         {
             surfaceTypeProp = FindProperty("_Surface", properties);
@@ -149,6 +164,12 @@ namespace MalyaWka.ShaderPack.Editor
             alphaClipProp = FindProperty("_AlphaClip", properties);
             alphaCutoffProp = FindProperty("_Cutoff", properties);
             baseMapProp = FindProperty("_BaseMap", properties, false);
+            metalicMapProp = FindProperty("_MetallicMap", properties, false);
+            metallicProp = FindProperty("_Metallic", properties, false);
+            roughnessMapProp = FindProperty("_RoughnessMap", properties, false);
+            roughnessProp = FindProperty("_Roughness", properties, false);
+            reflectionMapProp = FindProperty("_CubeMap", properties, false);
+            reflectionStrengthProp = FindProperty("_ReflectionStrength", properties, false);
             baseColorProp = FindProperty("_BaseColor", properties, false);
             highlightColorProp = FindProperty("_HighlightColor", properties, false);
             shadowColorProp = FindProperty("_ShadowColor", properties, false);
@@ -157,13 +178,13 @@ namespace MalyaWka.ShaderPack.Editor
             zWriteModeProp = FindProperty("_ZWriteMode", properties, false);
             topProp = FindProperty("_AlwaysOnTop", properties, false);
         }
-        
+
         public override void OnGUI(MaterialEditor materialEditorIn, MaterialProperty[] properties)
         {
             if (materialEditorIn == null)
                 throw new ArgumentNullException("materialEditorIn");
 
-            FindProperties(properties); 
+            FindProperties(properties);
             materialEditor = materialEditorIn;
             Material material = materialEditor.target as Material;
 
@@ -175,18 +196,18 @@ namespace MalyaWka.ShaderPack.Editor
 
             ShaderPropertiesGUI(material);
         }
-        
+
         public virtual void OnOpenGUI(Material material, MaterialEditor materialEditor)
         {
-            m_HeaderStateKey = k_KeyPrefix + material.shader.name; 
+            m_HeaderStateKey = k_KeyPrefix + material.shader.name;
             m_SurfaceOptionsFoldout = new SavedBool($"{m_HeaderStateKey}.SurfaceOptionsFoldout", true);
             m_SurfaceInputsFoldout = new SavedBool($"{m_HeaderStateKey}.SurfaceInputsFoldout", true);
             m_AdvancedFoldout = new SavedBool($"{m_HeaderStateKey}.AdvancedFoldout", false);
 
-            foreach (var obj in  materialEditor.targets)
+            foreach (var obj in materialEditor.targets)
                 MaterialChanged((Material)obj);
         }
-        
+
         public void ShaderPropertiesGUI(Material material)
         {
             if (material == null)
@@ -195,7 +216,8 @@ namespace MalyaWka.ShaderPack.Editor
             EditorGUI.BeginChangeCheck();
 
             m_SurfaceOptionsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_SurfaceOptionsFoldout.value, Styles.SurfaceOptions);
-            if(m_SurfaceOptionsFoldout.value){
+            if (m_SurfaceOptionsFoldout.value)
+            {
                 DrawSurfaceOptions(material);
                 EditorGUILayout.Space();
             }
@@ -221,13 +243,13 @@ namespace MalyaWka.ShaderPack.Editor
 
             if (EditorGUI.EndChangeCheck())
             {
-                foreach (var obj in  materialEditor.targets)
+                foreach (var obj in materialEditor.targets)
                     MaterialChanged((Material)obj);
             }
         }
-        
+
         #endregion
-        
+
         #region DrawingFunctions
 
         public virtual void DrawSurfaceOptions(Material material)
@@ -279,11 +301,11 @@ namespace MalyaWka.ShaderPack.Editor
             if (material.HasProperty("_ZWriteMode"))
             {
                 DoPopup(Styles.zWriteMode, zWriteModeProp, Enum.GetNames(typeof(ZWriteMode)));
-                if ((ZWriteMode) material.GetFloat("_ZWriteMode") == ZWriteMode.On)
+                if ((ZWriteMode)material.GetFloat("_ZWriteMode") == ZWriteMode.On)
                 {
                     material.SetInt("_ZWrite", 1);
                 }
-                else if ((ZWriteMode) material.GetFloat("_ZWriteMode") == ZWriteMode.Off)
+                else if ((ZWriteMode)material.GetFloat("_ZWriteMode") == ZWriteMode.Off)
                 {
                     material.SetInt("_ZWrite", 0);
                 }
@@ -306,14 +328,14 @@ namespace MalyaWka.ShaderPack.Editor
                     }
                     else
                     {
-                        cavityProp.floatValue = 0.0f;            
+                        cavityProp.floatValue = 0.0f;
                         material.SetShaderPassEnabled("DepthOnly", false);
                         material.SetShaderPassEnabled("DepthNormals", false);
                     }
                 }
             }
         }
-        
+
         protected void DrawTopEnableField(Material material)
         {
             if (topProp != null)
@@ -333,7 +355,7 @@ namespace MalyaWka.ShaderPack.Editor
                 }
             }
         }
-        
+
         protected void DrawQueueOffsetField()
         {
             if (queueOffsetProp != null)
@@ -347,32 +369,50 @@ namespace MalyaWka.ShaderPack.Editor
             }
         }
 
-        public virtual void DrawAdditionalFoldouts(Material material){}
+        public virtual void DrawAdditionalFoldouts(Material material) { }
 
-        public virtual void DrawBaseProperties(Material material) 
+        public virtual void DrawBaseProperties(Material material)
         {
-            if (baseMapProp != null && baseColorProp != null) // Draw the baseMap, most shader will have at least a baseMap
+            if (baseMapProp != null && baseColorProp != null)
             {
                 materialEditor.TexturePropertySingleLine(Styles.baseMap, baseMapProp, baseColorProp);
-                // TODO Temporary fix for lightmapping, to be replaced with attribute tag.
-                if (material.HasProperty("_MainTex"))
+
+                // Hiển thị Metallic Map
+                if (metalicMapProp != null)
                 {
-                    material.SetTexture("_MainTex", baseMapProp.textureValue);
-                    var baseMapTiling = baseMapProp.textureScaleAndOffset;
-                    material.SetTextureScale("_MainTex", new Vector2(baseMapTiling.x, baseMapTiling.y));
-                    material.SetTextureOffset("_MainTex", new Vector2(baseMapTiling.z, baseMapTiling.w));
+                    materialEditor.TexturePropertySingleLine(new GUIContent("Metallic Map"), metalicMapProp);
                 }
-                materialEditor.ColorProperty(highlightColorProp, "Highlight Color");
-                materialEditor.ColorProperty(shadowColorProp, "Shadow Color");
-            }
-            else if (baseMapProp == null && baseColorProp != null)
-            {
-                materialEditor.ColorProperty(baseColorProp, "Base Color");
-                materialEditor.ColorProperty(highlightColorProp, "Highlight Color");
-                materialEditor.ColorProperty(shadowColorProp, "Shadow Color");
-            }
-            else
-            {
+
+                // Hiển thị slider cho Metallic
+                if (metallicProp != null)
+                {
+                    materialEditor.ShaderProperty(metallicProp, "Metallic");
+                }
+
+                // Hiển thị Roughness Map
+                if (roughnessMapProp != null)
+                {
+                    materialEditor.TexturePropertySingleLine(new GUIContent("Roughness Map"), roughnessMapProp);
+                }
+
+                // Hiển thị slider cho Roughness
+                if (roughnessProp != null)
+                {
+                    materialEditor.ShaderProperty(roughnessProp, "Roughness");
+                }
+
+                // Hiển thị Reflection Map
+                if (reflectionMapProp != null)
+                {
+                    materialEditor.TexturePropertySingleLine(new GUIContent("Reflection Map"), reflectionMapProp);
+                }
+
+                // Hiển thị slider cho Reflection Strength
+                if (reflectionStrengthProp != null)
+                {
+                    materialEditor.ShaderProperty(reflectionStrengthProp, "Reflection Strength");
+                }
+
                 materialEditor.ColorProperty(highlightColorProp, "Highlight Color");
                 materialEditor.ColorProperty(shadowColorProp, "Shadow Color");
             }
@@ -384,7 +424,7 @@ namespace MalyaWka.ShaderPack.Editor
         }
 
         #endregion
-        
+
         #region MaterialDataFunctions
 
         public static void SetMaterialKeywords(Material material, Action<Material> shadingModelFunc = null, Action<Material> shaderFunc = null)
@@ -406,7 +446,7 @@ namespace MalyaWka.ShaderPack.Editor
                 throw new ArgumentNullException("material");
 
             bool alphaClip = false;
-            if(material.HasProperty("_AlphaClip"))
+            if (material.HasProperty("_AlphaClip"))
                 alphaClip = material.GetFloat("_AlphaClip") >= 0.5;
 
             if (alphaClip)
@@ -420,54 +460,54 @@ namespace MalyaWka.ShaderPack.Editor
 
             if (material.HasProperty("_Surface"))
             {
-                SurfaceType surfaceType = (SurfaceType) material.GetFloat("_Surface");
+                SurfaceType surfaceType = (SurfaceType)material.GetFloat("_Surface");
                 if (surfaceType == SurfaceType.Opaque)
                 {
                     if (alphaClip)
                     {
-                        material.renderQueue = (int) RenderQueue.AlphaTest;
+                        material.renderQueue = (int)RenderQueue.AlphaTest;
                         material.SetOverrideTag("RenderType", "TransparentCutout");
                     }
                     else
                     {
-                        material.renderQueue = (int) RenderQueue.Geometry;
+                        material.renderQueue = (int)RenderQueue.Geometry;
                         material.SetOverrideTag("RenderType", "Opaque");
                     }
 
-                    material.renderQueue += material.HasProperty("_QueueOffset") ? (int) material.GetFloat("_QueueOffset") : 0;
-                    material.SetInt("_SrcBlend", (int) UnityEngine.Rendering.BlendMode.One);
-                    material.SetInt("_DstBlend", (int) UnityEngine.Rendering.BlendMode.Zero);
+                    material.renderQueue += material.HasProperty("_QueueOffset") ? (int)material.GetFloat("_QueueOffset") : 0;
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                     material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                    if (material.HasProperty("_ZWriteMode") && (ZWriteMode) material.GetFloat("_ZWriteMode") == ZWriteMode.Default)
+                    if (material.HasProperty("_ZWriteMode") && (ZWriteMode)material.GetFloat("_ZWriteMode") == ZWriteMode.Default)
                     {
                         material.SetInt("_ZWrite", 1);
                     }
                 }
                 else
                 {
-                    BlendMode blendMode = (BlendMode) material.GetFloat("_Blend");
+                    BlendMode blendMode = (BlendMode)material.GetFloat("_Blend");
 
                     // Specific Transparent Mode Settings
                     switch (blendMode)
                     {
                         case BlendMode.Alpha:
-                            material.SetInt("_SrcBlend", (int) UnityEngine.Rendering.BlendMode.SrcAlpha);
-                            material.SetInt("_DstBlend", (int) UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                             material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                             break;
                         case BlendMode.Premultiply:
-                            material.SetInt("_SrcBlend", (int) UnityEngine.Rendering.BlendMode.One);
-                            material.SetInt("_DstBlend", (int) UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                             material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
                             break;
                         case BlendMode.Additive:
-                            material.SetInt("_SrcBlend", (int) UnityEngine.Rendering.BlendMode.SrcAlpha);
-                            material.SetInt("_DstBlend", (int) UnityEngine.Rendering.BlendMode.One);
+                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
                             material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                             break;
                         case BlendMode.Multiply:
-                            material.SetInt("_SrcBlend", (int) UnityEngine.Rendering.BlendMode.DstColor);
-                            material.SetInt("_DstBlend", (int) UnityEngine.Rendering.BlendMode.Zero);
+                            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.DstColor);
+                            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                             material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                             material.EnableKeyword("_ALPHAMODULATE_ON");
                             break;
@@ -475,18 +515,18 @@ namespace MalyaWka.ShaderPack.Editor
 
                     // General Transparent Material Settings
                     material.SetOverrideTag("RenderType", "Transparent");
-                    if (material.HasProperty("_ZWriteMode") && (ZWriteMode) material.GetFloat("_ZWriteMode") == ZWriteMode.Default)
+                    if (material.HasProperty("_ZWriteMode") && (ZWriteMode)material.GetFloat("_ZWriteMode") == ZWriteMode.Default)
                     {
                         material.SetInt("_ZWrite", 0);
                     }
                     material.renderQueue = (int)RenderQueue.Transparent;
-                    material.renderQueue += material.HasProperty("_QueueOffset") ? (int) material.GetFloat("_QueueOffset") : 0;
+                    material.renderQueue += material.HasProperty("_QueueOffset") ? (int)material.GetFloat("_QueueOffset") : 0;
                 }
             }
         }
 
         #endregion
-        
+
         #region HelperFunctions
 
         public static void TwoFloatSingleLine(GUIContent title, MaterialProperty prop1, GUIContent prop1Label,
@@ -544,7 +584,7 @@ namespace MalyaWka.ShaderPack.Editor
 
             EditorGUI.showMixedValue = false;
         }
-        
+
         public static Rect TextureColorProps(MaterialEditor materialEditor, GUIContent label, MaterialProperty textureProp, MaterialProperty colorProp, bool hdr = false)
         {
             Rect rect = EditorGUILayout.GetControlRect();
@@ -573,7 +613,7 @@ namespace MalyaWka.ShaderPack.Editor
 
             return rect;
         }
-        
+
         public new static MaterialProperty FindProperty(string propertyName, MaterialProperty[] properties)
         {
             return FindProperty(propertyName, properties, true);
@@ -587,7 +627,7 @@ namespace MalyaWka.ShaderPack.Editor
                     return properties[index];
             }
             if (propertyIsMandatory)
-                throw new ArgumentException("Could not find MaterialProperty: '" + propertyName + "', Num properties: " + (object) properties.Length);
+                throw new ArgumentException("Could not find MaterialProperty: '" + propertyName + "', Num properties: " + (object)properties.Length);
             return null;
         }
 

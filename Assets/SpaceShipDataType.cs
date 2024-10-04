@@ -7,6 +7,17 @@ using UnityEngine.UI;
 namespace BillUtils.SpaceShipData
 {
     [Serializable]
+    public enum SoundID
+    {
+        S_CLICK,
+        S_COLOR_CLICK,
+        S_PART_CLICK,
+        S_SLIDER,
+        S_TOGGLE,
+        S_DOWNLOAD,
+    }
+
+    [Serializable]
     public enum E_SpaceShipPart
     {
         NONE,
@@ -77,6 +88,7 @@ namespace BillUtils.SpaceShipData
             return Resources.Load<Mesh>(Path);
         }
     }
+
     [Serializable]
     public class SpaceShipHead : SpaceShipPartBase { }
 

@@ -7,7 +7,8 @@ using DG.Tweening;
 using UnityGLTF;  // Đảm bảo bạn đã cài đặt UnityGLTF
 using UnityGLTF.Loader;
 using System;
-using NaughtyAttributes;  // Nhập khẩu các lớp cần thiết
+using NaughtyAttributes;
+using SimpleFileBrowser;  // Nhập khẩu các lớp cần thiết
 
 public class GLBExportTool : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class GLBExportTool : MonoBehaviour
     [Button, ContextMenu("Export GLB and Zip")]
     public void ExportAndZip()
     {
+
+
         // Kiểm tra nền tảng
         if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
         {
@@ -39,10 +42,17 @@ public class GLBExportTool : MonoBehaviour
 
     private IEnumerator ExportProcess()
     {
-        // Tạo thư mục xuất nếu chưa có
-        if (!Directory.Exists(exportFolderPath))
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Folders, false, null, null, "Select Folder", "Select");
+
+        if (FileBrowser.Success)
         {
-            Directory.CreateDirectory(exportFolderPath);
+            // Lưu đường dẫn người dùng chọn
+            exportFolderPath = FileBrowser.Result[0];
+            Debug.Log("Selected folder: " + exportFolderPath);
+        }
+        else
+        {
+            Debug.Log("No folder selected.");
         }
 
         // Tạo đối tượng tạm thời để gộp các phần mesh lại

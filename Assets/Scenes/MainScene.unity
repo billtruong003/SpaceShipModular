@@ -1085,8 +1085,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   e_SpaceShipPart: 2
   itemController: {fileID: 1185996417}
-  partIconIMG: {fileID: 0}
-  spaceShipCreator: {fileID: 0}
+  partIconIMG: {fileID: 594949193}
+  spaceShipCreator: {fileID: 1892251587}
 --- !u!1 &84309669
 GameObject:
   m_ObjectHideFlags: 0
@@ -4506,8 +4506,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   e_SpaceShipPart: 4
   itemController: {fileID: 1185996417}
-  partIconIMG: {fileID: 0}
-  spaceShipCreator: {fileID: 0}
+  partIconIMG: {fileID: 1721398441}
+  spaceShipCreator: {fileID: 1892251587}
 --- !u!1 &354386104
 GameObject:
   m_ObjectHideFlags: 0
@@ -8762,8 +8762,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   e_SpaceShipPart: 1
   itemController: {fileID: 1185996417}
-  partIconIMG: {fileID: 0}
-  spaceShipCreator: {fileID: 0}
+  partIconIMG: {fileID: 1384052799}
+  spaceShipCreator: {fileID: 1892251587}
 --- !u!1 &646018461
 GameObject:
   m_ObjectHideFlags: 0
@@ -18167,8 +18167,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   e_SpaceShipPart: 3
   itemController: {fileID: 1185996417}
-  partIconIMG: {fileID: 0}
-  spaceShipCreator: {fileID: 0}
+  partIconIMG: {fileID: 1559497144}
+  spaceShipCreator: {fileID: 1892251587}
 --- !u!1 &1314680630
 GameObject:
   m_ObjectHideFlags: 0

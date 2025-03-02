@@ -40,11 +40,9 @@ public class ChangeTextureColor : MonoBehaviour
     private void Start()
     {
         Init();
-
 #if UnityEditor
         ApplyColorsToTexture();
 #endif
-
     }
 
     private void Init()
@@ -221,6 +219,7 @@ public class ChangeTextureColor : MonoBehaviour
     {
         currentButton = buttonChangeColor;
     }
+
     public void OpenColorPicker(Vector2Int pixelPick)
     {
         if (!ColorPicker.done)
@@ -231,7 +230,7 @@ public class ChangeTextureColor : MonoBehaviour
         OnSetPixelPick?.Invoke();
         currentColorPick = TextureColorUtils.GetPixelColor(texture, pixelPick);
 
-        ColorPicker.Create(currentColorPick, "Color Part Picking UV Position" + currentPixel.ToString(), (c) => OnColorChange(c, currentPixel), (c) => OnColorSelecte(c, currentPixel), false);
+        ColorPicker.Create(currentColorPick, "Color Part Picking UV Position" + currentPixel.ToString(), (c) => OnColorChange(c, currentPixel), (c) => OnColorSelected(c, currentPixel), false);
     }
 
     private void OnColorChange(Color c, Vector2Int currentPixel)
@@ -243,7 +242,7 @@ public class ChangeTextureColor : MonoBehaviour
         TextureColorUtils.SetPixelColor(texture, currentPixel.x, currentPixel.y, c);
     }
 
-    private void OnColorSelecte(Color c, Vector2Int currentPixel)
+    private void OnColorSelected(Color c, Vector2Int currentPixel)
     {
         if (currentButton != null)
         {
@@ -278,6 +277,24 @@ public class ChangeTextureColor : MonoBehaviour
 
     public void RandomizeColors()
     {
+        RandomizeColorsQuadradic();
+    }
+
+    [Button("Randomize Colors Triad")] // Thêm button NaughtyAttributes để gọi hàm này trong Inspector
+    public void RandomizeColorTriad()
+    {
+        // 1. Chọn màu gốc ngẫu nhiên (Hue)
+        float baseHue = UnityEngine.Random.value; // Giá trị Hue từ 0.0 đến 1.0
+
+        // 2. Tạo bộ ba màu triad (HSV)
+        Color color1HSV = Color.HSVToRGB(baseHue, 0.7f, 0.9f); // Màu gốc (Saturation và Value có thể tùy chỉnh)
+        Color color2HSV = Color.HSVToRGB((baseHue + 0.333f) % 1f, 0.7f, 0.9f); // Màu thứ hai (Hue + 120 độ = 1/3 vòng tròn)
+        Color color3HSV = Color.HSVToRGB((baseHue + 0.666f) % 1f, 0.7f, 0.9f); // Màu thứ ba (Hue + 240 độ = 2/3 vòng tròn)
+
+        Color[] triadColors = new Color[] { color1HSV, color2HSV, color3HSV }; // Mảng chứa bộ ba màu
+
+        int colorIndex = 0; // Biến để theo dõi màu hiện tại trong triad
+
         foreach (ButtonChangeColor buttonChangeColor in buttonChangeColors)
         {
             bool isLocked = IsPartLocked(buttonChangeColor.SpaceShipPart);
@@ -286,12 +303,55 @@ public class ChangeTextureColor : MonoBehaviour
                 Debug.Log($"{buttonChangeColor.SpaceShipPart} is locked, skipping color change.");
                 continue;
             }
-            Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
-            buttonChangeColor.SetColor(randomColor);
-            TextureColorUtils.SetPixelColor(texture, buttonChangeColor.PixelPick.x, buttonChangeColor.PixelPick.y, randomColor);
+
+            // 3. Lấy màu từ triad theo thứ tự vòng lặp
+            Color colorToApply = triadColors[colorIndex % triadColors.Length]; // Lấy màu từ mảng triad và đảm bảo index không vượt quá giới hạn
+
+            buttonChangeColor.SetColor(colorToApply);
+            TextureColorUtils.SetPixelColor(texture, buttonChangeColor.PixelPick.x, buttonChangeColor.PixelPick.y, colorToApply);
+
+            colorIndex++; // Chuyển sang màu tiếp theo trong triad cho nút tiếp theo
         }
         texture.Apply();
     }
+
+
+
+    [Button("Randomize Colors Quadradic")] // Thêm button NaughtyAttributes để gọi hàm này trong Inspector
+    public void RandomizeColorsQuadradic() // Đổi tên hàm thành RandomizeColorsQuadradic để phân biệt
+    {
+        // 1. Chọn màu gốc ngẫu nhiên (Hue)
+        float baseHue = UnityEngine.Random.value;
+
+        // 2. Tạo bộ tứ màu Quadradic (Rectangle - Hình chữ nhật)
+        Color color1HSV = Color.HSVToRGB(baseHue, 0.6f, 0.9f);       // Màu gốc (Saturation và Value tùy chỉnh)
+        Color color2HSV = Color.HSVToRGB((baseHue + 0.5f) % 1f, 0.6f, 0.9f);   // Màu bổ sung trực tiếp (180 độ)
+        Color color3HSV = Color.HSVToRGB((baseHue + 0.25f) % 1f, 0.6f, 0.9f);  // Màu thứ ba (90 độ từ gốc)
+        Color color4HSV = Color.HSVToRGB((baseHue + 0.75f) % 1f, 0.6f, 0.9f);  // Màu bổ sung của màu thứ ba (270 độ từ gốc, hoặc 180 độ từ màu thứ ba)
+
+        Color[] quadColors = new Color[] { color1HSV, color2HSV, color3HSV, color4HSV }; // Mảng 4 màu Quadradic
+
+        int colorIndex = 0;
+
+        foreach (ButtonChangeColor buttonChangeColor in buttonChangeColors)
+        {
+            bool isLocked = IsPartLocked(buttonChangeColor.SpaceShipPart);
+            if (isLocked)
+            {
+                Debug.Log($"{buttonChangeColor.SpaceShipPart} is locked, skipping color change.");
+                continue;
+            }
+
+            Color colorToApply = quadColors[colorIndex % quadColors.Length]; // Lấy màu từ mảng quadColors
+
+            buttonChangeColor.SetColor(colorToApply);
+            TextureColorUtils.SetPixelColor(texture, buttonChangeColor.PixelPick.x, buttonChangeColor.PixelPick.y, colorToApply);
+
+            colorIndex++;
+        }
+        texture.Apply();
+    }
+
 
     private bool IsPartLocked(E_SpaceShipPart part)
     {
@@ -352,10 +412,10 @@ public class ChangeTextureColor : MonoBehaviour
     {
         colors = new Color[]
         {
-        HexToColor("#bba45a"),
-        HexToColor("#672121"),
-        HexToColor("#000000"),
-        HexToColor("#ffffff")
+            HexToColor("#bba45a"),
+            HexToColor("#672121"),
+            HexToColor("#000000"),
+            HexToColor("#ffffff")
         };
 
         width = texture.width;

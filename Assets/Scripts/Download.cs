@@ -236,7 +236,7 @@ public class GLBExportTool : MonoBehaviour
                     // Lưu các texture từ material
                     SaveTexture(mat, "_BaseMap");
                     SaveTexture(mat, "_MetallicMap");
-                    SaveTexture(mat, "_RoughnessMap");
+                    SaveTexture(mat, "_SmoothnessMap");
                 }
             }
         }

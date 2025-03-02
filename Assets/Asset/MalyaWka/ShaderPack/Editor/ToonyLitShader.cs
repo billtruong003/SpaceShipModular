@@ -66,22 +66,46 @@ namespace MalyaWka.ShaderPack.Editor
                 "Sets where the Alpha Clipping starts. The higher the value is, the brighter the  effect is when clipping starts.");
 
             public static readonly GUIContent baseMap = new GUIContent("Base Map",
-                "Specifies the base Material and/or Color of the surface. If you’ve selected Transparent or Alpha Clipping under Surface Options, your Material uses the Texture’s alpha channel or color.");
+                "Specifies the base Material and/or Color of the surface.");
 
-            public static readonly GUIContent metalicMap = new GUIContent("Metalic Map",
-                "Specifies the base Material and/or Color of the surface. If you’ve selected Transparent or Alpha Clipping under Surface Options, your Material uses the Texture’s alpha channel or color.");
+            public static readonly GUIContent metallicMap = new GUIContent("Metallic Map",
+                "Texture to control the metallic areas of the Material.");
 
-            public static readonly GUIContent queueSlider = new GUIContent("Render Order Priority",
-                "Determines the chronological rendering order for a Material. High values are rendered first.");
+            public static readonly GUIContent metallic = new GUIContent("Metallic",
+                "Amount of metallicity, from 0 (dielectric) to 1 (metal).");
+
+            public static readonly GUIContent smoothnessMap = new GUIContent("Smoothness Map",
+                "Texture to control the smoothness areas of the Material.");
+
+            public static readonly GUIContent smoothness = new GUIContent("Smoothness",
+                "Controls the glossiness/smoothness of the surface.");
+
+            public static readonly GUIContent reflectionMap = new GUIContent("Reflection Cubemap",
+                "Cubemap texture for reflections.");
+
+            public static readonly GUIContent reflectionStrength = new GUIContent("Reflection Strength",
+                "Intensity of the reflection effect.");
+
+            public static readonly GUIContent baseColor = new GUIContent("Base Color",
+                "Main color of the surface.");
+
+            public static readonly GUIContent highlightColor = new GUIContent("Highlight Color",
+                "Color used for the highlight (lighter) part of the toon shading.");
+
+            public static readonly GUIContent shadowColor = new GUIContent("Shadow Color",
+                "Color used for the shadow (darker) part of the toon shading.");
+
+            public static readonly GUIContent queueSlider = new GUIContent("Render Queue Offset",
+                "Adjusts the render queue offset for this material.");
 
             public static readonly GUIContent cavityEnabled = new GUIContent("Enable Cavity",
-                "Select cavity enabled or not for this material.");
+                "Enables screen space cavity effect.");
 
             public static readonly GUIContent zWriteMode = new GUIContent("Z Write Mode",
-                "Select this if want rewrite default mode for z write.");
+                "Controls Z-writing behavior, overriding default if needed.");
 
             public static readonly GUIContent topEnabled = new GUIContent("Always On Top",
-                "Select always on top enabled or not for this material.");
+                "Forces the material to render on top of everything else, for special effects.");
         }
 
         #endregion
@@ -102,14 +126,16 @@ namespace MalyaWka.ShaderPack.Editor
 
         protected MaterialProperty baseMapProp { get; set; }
 
-        protected MaterialProperty metalicMapProp { get; set; }
+        protected MaterialProperty metallicMapProp { get; set; }
 
         protected MaterialProperty metallicProp { get; set; }
 
-        protected MaterialProperty roughnessMapProp { get; set; }
+        protected MaterialProperty smoothnessMapProp { get; set; } // Renamed from roughnessMapProp
 
-        protected MaterialProperty roughnessProp { get; set; }
+        protected MaterialProperty smoothnessProp { get; set; }    // Renamed from roughnessProp
+
         protected MaterialProperty reflectionMapProp { get; set; }
+
         protected MaterialProperty reflectionStrengthProp { get; set; }
 
         protected MaterialProperty baseColorProp { get; set; }
@@ -164,10 +190,10 @@ namespace MalyaWka.ShaderPack.Editor
             alphaClipProp = FindProperty("_AlphaClip", properties);
             alphaCutoffProp = FindProperty("_Cutoff", properties);
             baseMapProp = FindProperty("_BaseMap", properties, false);
-            metalicMapProp = FindProperty("_MetallicMap", properties, false);
+            metallicMapProp = FindProperty("_MetallicMap", properties, false);
             metallicProp = FindProperty("_Metallic", properties, false);
-            roughnessMapProp = FindProperty("_RoughnessMap", properties, false);
-            roughnessProp = FindProperty("_Roughness", properties, false);
+            smoothnessMapProp = FindProperty("_SmoothnessMap", properties, false); // Renamed
+            smoothnessProp = FindProperty("_Smoothness", properties, false);       // Renamed
             reflectionMapProp = FindProperty("_CubeMap", properties, false);
             reflectionStrengthProp = FindProperty("_ReflectionStrength", properties, false);
             baseColorProp = FindProperty("_BaseColor", properties, false);
@@ -377,44 +403,35 @@ namespace MalyaWka.ShaderPack.Editor
             {
                 materialEditor.TexturePropertySingleLine(Styles.baseMap, baseMapProp, baseColorProp);
 
-                // Hiển thị Metallic Map
-                if (metalicMapProp != null)
-                {
-                    materialEditor.TexturePropertySingleLine(new GUIContent("Metallic Map"), metalicMapProp);
-                }
+                // Metallic Properties
+                EditorGUILayout.Space();
+                EditorGUI.indentLevel++;
+                GUILayout.Label("Metallic Properties", EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+                materialEditor.TexturePropertySingleLine(Styles.metallicMap, metallicMapProp);
+                materialEditor.ShaderProperty(metallicProp, Styles.metallic.text); // Use .text here
+                EditorGUI.indentLevel--;
+                EditorGUI.indentLevel--;
 
-                // Hiển thị slider cho Metallic
-                if (metallicProp != null)
-                {
-                    materialEditor.ShaderProperty(metallicProp, "Metallic");
-                }
+                // Smoothness Properties (Renamed from Roughness)
+                EditorGUILayout.Space();
+                EditorGUI.indentLevel++;
+                GUILayout.Label("Smoothness Properties", EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+                materialEditor.TexturePropertySingleLine(Styles.smoothnessMap, smoothnessMapProp); // Renamed
+                materialEditor.ShaderProperty(smoothnessProp, Styles.smoothness.text);           // Use .text here
+                EditorGUI.indentLevel--;
+                EditorGUI.indentLevel--;
 
-                // Hiển thị Roughness Map
-                if (roughnessMapProp != null)
-                {
-                    materialEditor.TexturePropertySingleLine(new GUIContent("Roughness Map"), roughnessMapProp);
-                }
-
-                // Hiển thị slider cho Roughness
-                if (roughnessProp != null)
-                {
-                    materialEditor.ShaderProperty(roughnessProp, "Roughness");
-                }
-
-                // Hiển thị Reflection Map
-                if (reflectionMapProp != null)
-                {
-                    materialEditor.TexturePropertySingleLine(new GUIContent("Reflection Map"), reflectionMapProp);
-                }
-
-                // Hiển thị slider cho Reflection Strength
-                if (reflectionStrengthProp != null)
-                {
-                    materialEditor.ShaderProperty(reflectionStrengthProp, "Reflection Strength");
-                }
-
-                materialEditor.ColorProperty(highlightColorProp, "Highlight Color");
-                materialEditor.ColorProperty(shadowColorProp, "Shadow Color");
+                // Toon Shading Colors
+                EditorGUILayout.Space();
+                EditorGUI.indentLevel++;
+                GUILayout.Label("Toon Shading Colors", EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+                materialEditor.ColorProperty(highlightColorProp, Styles.highlightColor.text); // Use .text here
+                materialEditor.ColorProperty(shadowColorProp, Styles.shadowColor.text);    // Use .text here, THIS LINE WAS CAUSING THE ERROR (according to error message, likely also the line before)
+                EditorGUI.indentLevel--;
+                EditorGUI.indentLevel--;
             }
         }
 

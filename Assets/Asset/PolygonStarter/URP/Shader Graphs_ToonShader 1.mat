@@ -42,7 +42,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CubeMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 8900000, guid: c33e2ba385ecd8943bec537dd2d89cc6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -54,6 +54,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RoughnessMap:
+        m_Texture: {fileID: 2800000, guid: efa6c4f58f2ef584e853d31cc0ee62e6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SmoothnessMap:
         m_Texture: {fileID: 2800000, guid: efa6c4f58f2ef584e853d31cc0ee62e6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -79,13 +83,14 @@ Material:
     - _Cutoff: 0.5
     - _DstBlend: 0
     - _Max: 3
-    - _Metallic: 0
+    - _Metallic: 0.572
     - _Min: 0.1
     - _QueueControl: 0
     - _QueueOffset: -50
     - _ReflectionStrength: 0.5
     - _Roughness: 0.3730155
     - _Shades: 0.03
+    - _Smoothness: 0.5
     - _SrcBlend: 1
     - _Surface: 0
     - _ZWrite: 1

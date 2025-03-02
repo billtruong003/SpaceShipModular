@@ -1,4 +1,4 @@
-Shader "MalyaWka/ShaderPack/ToonyLit"
+Shader "MalyaWka/ShaderPack/ToonyLit_LerpSmoothness"
 {
     Properties
     {
@@ -8,25 +8,23 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
         _ShadowColor("Shadow Color", Color) = (0.5, 0.5, 0.5, 1)
         _Cutoff("Alpha Clipping", Range(0.0, 1.0)) = 0.5
 
-        // Metallic properties
+        // Metallic and Smoothness properties
         _MetallicMap("Metallic Map", 2D) = "white" {}
-        _Metallic("Metallic", Range(0.0, 1.0)) = 0.5
-
-        // Roughness properties
-        _RoughnessMap("Roughness Map", 2D) = "white" {}
-        _Roughness("Roughness", Range(0.0, 1.0)) = 0.5
+        _Metallic("Metallic", Range(0.0, 1.0)) = 0.0
+        _SmoothnessMap("Smoothness Map", 2D) = "white" {}
+        _Smoothness("Smoothness", Range(0.0, 1.0)) = 0.5
 
         [HideInInspector] _CavityEnabled("__cavity", Float) = 1.0
         [HideInInspector] _QueueOffset("__queue", Float) = 0.0
         [HideInInspector] _Surface("__surface", Float) = 0.0
         [HideInInspector] _Blend("__blend", Float) = 0.0
         [HideInInspector] _AlphaClip("__clip", Float) = 0.0
-        [HideInInspector] _SrcBlend("__src", Float) = 1.0
-        [HideInInspector] _DstBlend("__dst", Float) = 0.0
-        [HideInInspector] _ZWrite("__zw", Float) = 1.0
-        [HideInInspector] _ZWriteMode("__zwm", Float) = 0.0
-        [HideInInspector] _Cull("__cull", Float) = 2.0
-        [HideInInspector] _AlwaysOnTop("__top", Float) = 0.0
+        _SrcBlend("__src", Float) = 1.0
+        _DstBlend("__dst", Float) = 0.0
+        _ZWrite("__zw", Float) = 1.0
+        _ZWriteMode("__zwm", Float) = 0.0
+        _Cull("__cull", Float) = 2.0
+        _AlwaysOnTop("__top", Float) = 0.0
     }
     SubShader
     {
@@ -54,7 +52,7 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
             CBUFFER_START(UnityPerMaterial)
             float4 _BaseMap_ST;
             float _Metallic;
-            float _Roughness;
+            float _Smoothness; // Renamed from _Roughness, now Smoothness
             half4 _BaseColor;
             half4 _HighlightColor;
             half4 _ShadowColor;
@@ -64,12 +62,13 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
             half _AlwaysOnTop;
             CBUFFER_END
 
-            // Khai báo Metallic Map và Roughness Map
+            // Textures
             TEXTURE2D(_MetallicMap);
             SAMPLER(sampler_MetallicMap);
 
-            TEXTURE2D(_RoughnessMap);
-            SAMPLER(sampler_RoughnessMap);
+            TEXTURE2D(_SmoothnessMap); // Renamed from _RoughnessMap
+            SAMPLER(sampler_SmoothnessMap);
+
 
             #pragma prefer_hlslcc gles
             #pragma exclude_renderers d3d11_9x
@@ -144,7 +143,11 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
 
                 // Lấy giá trị từ map hoặc slider
                 float metallic = SAMPLE_TEXTURE2D(_MetallicMap, sampler_MetallicMap, uv).r * _Metallic;
-                float roughness = SAMPLE_TEXTURE2D(_RoughnessMap, sampler_RoughnessMap, uv).r * _Roughness;
+                // Thay đổi tính toán smoothness ở đây (sử dụng lerp)
+                float smoothnessMapValue = SAMPLE_TEXTURE2D(_SmoothnessMap, sampler_SmoothnessMap, uv).r;
+                float smoothness = lerp(smoothnessMapValue, _Smoothness, 0.5); // Lerp với hệ số 0.5 (cân bằng ảnh hưởng)
+                smoothness = saturate(smoothness); // Đảm bảo smoothness trong khoảng 0-1
+
 
                 float4 __albedo = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).rgba;
                 float4 __mainColor = _BaseColor.rgba;
@@ -182,7 +185,7 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
                 }
                 #endif
 
-                half3 indirectDiffuse = bakedGI * albedo * metallic * (1.0 - roughness);
+                half3 indirectDiffuse = bakedGI * albedo; // Indirect Diffuse không bị ảnh hưởng metallic/smoothness trực tiếp
 
                 half atten = mainLight.shadowAttenuation * mainLight.distanceAttenuation;
                 half ndl = dot(normalWS, lightDir);
@@ -190,40 +193,25 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
                 ndl = saturate(ndl) * atten;
                 // Toon shading logic
                 half3 ramp = lerp(__shadowColor, __highlightColor, ndl);
+                // Metallic sẽ ảnh hưởng đến màu shadow và highlight ramp, làm cho vùng metallic có tông màu tối hơn/bão hòa hơn
+                half3 modifiedShadowColor = lerp(__shadowColor, __shadowColor * 0.7 * __highlightColor, metallic); // Giảm độ sáng bóng tối, hơi ngả highlight
+                half3 modifiedHighlightColor = lerp(__highlightColor, lerp(__highlightColor, albedo, smoothness * 2.0), metallic); // **Nhân smoothness với 2.0** // Highlight có thể bão hòa hơn hoặc ngả sang albedo hơn khi metallic, phụ thuộc smooth
+
+                ramp = lerp(modifiedShadowColor, modifiedHighlightColor, ndl);
                 half3 rampColor = albedo * lightColor.rgb * ramp;
 
-                // Áp dụng hiệu ứng cavity nếu cần thiết
-                half cavity = 1.0; // Giá trị mặc định của cavity là 1.0 (không thay đổi)
-                #if defined (_SCREEN_SPACE_CAVITY)
-                if (_CavityEnabled)
-                {
-                    float2 normalizedUV = GetNormalizedScreenSpaceUV(input.positionCS);
-                    cavity = SampleCavity(normalizedUV);
-
-                    bakedGI *= cavity;  // Cavity ảnh hưởng đến ánh sáng gián tiếp
-                    lightColor *= cavity; // Và cả ánh sáng trực tiếp
-                }
-                #endif
-
-                // Ánh sáng gián tiếp với cavity nhưng không ảnh hưởng bởi roughness
-                rampColor += bakedGI * albedo;
-
-                // Tính toán Specular dựa trên metallic và roughness (Specular không bị ảnh hưởng bởi cavity)
-                float3 halfDir = normalize(lightDir + normalize(_WorldSpaceCameraPos.xyz - input.posWS));  
+                // Specular tính toán cơ bản vẫn giữ, nhưng ảnh hưởng của smoothness tăng lên
+                float3 halfDir = normalize(lightDir + normalize(_WorldSpaceCameraPos.xyz - input.posWS));
                 half specAngle = max(dot(normalWS, halfDir), 0.0);
-                float specularStrength = pow(specAngle, (1.0 - roughness) * 64.0); 
+                float specularPower = lerp(0.1, 256, smoothness);// Smoothness quyết định độ mạnh specular
+                float specularStrength = pow(specAngle, specularPower) * smoothness * metallic; // Metallic cũng cần để có specular
+                half3 specular = specularStrength * _HighlightColor.rgb * lightColor;
 
-                // Specular highlights dựa trên metallic và roughness
-                half3 specular = specularStrength * lerp(float3(0.04, 0.04, 0.04), albedo, metallic);
-                specular *= lightColor;
-
-                // Tổng hợp ánh sáng diffuse, specular và cavity
-                half3 finalColor = rampColor * (1.0 - metallic) + specular;
-
-                // Thêm lớp emission nếu cần thiết
+                // Tổng hợp ánh sáng: Diffuse toon shading + Specular
+                half3 finalColor = rampColor + specular;
+                finalColor += indirectDiffuse * (1.0 - metallic * smoothness); // Ambient gián tiếp vẫn có, giảm trên bề mặt metallic/smooth
                 finalColor += emission;
 
-                // Trả lại màu cuối cùng
                 half4 color = half4(finalColor, alpha);
                 color.a = OutputAlpha(color.a, _Surface);
                 return color;
@@ -232,7 +220,7 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
             ENDHLSL
         }
 
-        // Các pass khác giữ nguyên
+        // Các Pass DepthOnly và DepthNormals giữ nguyên như trước
 
         Pass // DepthOnly
         {
@@ -243,6 +231,7 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
             ColorMask 0
             Cull[_Cull]
 
+            // ... (nội dung pass DepthOnly - không thay đổi) ...
             HLSLPROGRAM
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
@@ -313,6 +302,7 @@ Shader "MalyaWka/ShaderPack/ToonyLit"
             ZWrite On
             Cull[_Cull]
 
+            // ... (nội dung pass DepthNormals - không thay đổi) ...
             HLSLPROGRAM
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
